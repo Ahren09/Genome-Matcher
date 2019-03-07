@@ -77,73 +77,42 @@ private:
     std::vector<ValueType> searchNode(TrieNode* p, const std::string& key,int i, bool exactMatchOnly)
     {
         std::vector<ValueType> v;
-        if(key.size()==i)
+        int KEY_SIZE=key.size();
+        
+        //If p is nullptr
+        if(!p) return v;
+        
+        //Exact Match
+        //If current node is the last node, concatonate ValueType vector to v
+        if(KEY_SIZE==i+1)
+        {
+            v.insert(v.end(),p->val.begin(),p->val.end());
             return v;
+        }
+        
         char c=key[i];
         int index=toIndex(c);
         
-        vector<ValueType>* tmp
-        
-        //Exact Match
-        
-        //If current node is the last node, concatonate ValueType vector to v
-        if(i==key.size()-1)
+        vector<ValueType>* tmp;
+        if(p->children[index])
         {
-            std::copy(p->val.begin(),p->val.end(),std::back_inserter(v));
+            tmp=&searchNode(p->children[index], key, i+1, exactMatchOnly);
+            v.insert(v.end(),tmp->begin(),tmp->end());
         }
         
-        if(exactMatchOnly)
+        //If we do NOT require exact match
+        if(!exactMatchOnly)
         {
-            //If children vector contain the next element, continue searching
-            else if(p->children[index] != nullptr)
-            {
-                tmp=&searchNode(p->children[j],key, i+1, true);
-                std::copy(tmp->begin(),tmp->end(),v);
-            }
-            
-        }
-        
-        else{
             for(int j=0;j<4;i++)
             {
+                //If children TrieNode is empty
                 if(j==index)
                     continue;
                 tmp=&searchNode(p->children[j],key, i+1, true);
-                std::copy(tmp->begin(),tmp->end(),v);
-                
+                v.insert(v.end(),tmp->begin(),tmp->end());
             }
-            
         }
         return v;
-        
-        if(p->children[index])
-        {
-            
-            return checkNode(p->children[index], key, i+1, value, false);
-            
-            p=p->children[index];
-        }
-        
-        
-        if(hasOneMismatch)
-        {
-            
-            if(p)
-                return nullptr;
-            else p=p->children[index];
-            
-        }
-        
-        else
-        {
-            
-            
-        }
-            
-        }
-        
-        
-        
     }
     
 };
@@ -219,7 +188,7 @@ std::vector<ValueType> find(const std::string& key, bool exactMatchOnly) const
     }
     
     
-    v=searchNode(p,key,exactMatchOnly);
+    v=searchNode(p,key,1,exactMatchOnly);
     return v;
     
     
