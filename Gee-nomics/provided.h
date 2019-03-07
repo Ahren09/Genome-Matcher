@@ -12,6 +12,8 @@ class Genome
 public:
     Genome(const std::string& nm, const std::string& sequence);
     ~Genome();
+    Genome(const Genome& other);
+    Genome& operator=(const Genome& rhs);
     static bool load(std::istream& genomeSource, std::vector<Genome>& genomes);
     int length() const;
     std::string name() const;
