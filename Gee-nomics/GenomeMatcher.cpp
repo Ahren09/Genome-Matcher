@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include "Trie.h"
 using namespace std;
 
 class GenomeMatcherImpl
@@ -14,30 +15,48 @@ public:
     bool findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const;
     bool findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const;
 private:
+    std::vector<const Genome*> genomes;
+    Trie<int> trie;
+    int min_searchLength;
 };
 
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
-{
-    // This compiles, but may not be correct
-}
+:min_searchLength(0)
+{}
 
 void GenomeMatcherImpl::addGenome(const Genome& genome)
 {
-    // This compiles, but may not be correct
+    
+    //Num of computation is (GENOME_LENGTH-SEARCH_LENGTH)*SEARCH_LENGTH
+    genomes.push_back(&genome);
+    int len=genome.length();
+    
+    //If Genome is shorter than mininum length
+    if(len<min_searchLength)
+        return;
+    
+    for(int i=0;min_searchLength+i<=len;i++)
+    {
+        string fragment;
+        genome.extract(i, min_searchLength, fragment);
+        trie.insert(fragment, i);
+    }
 }
 
 int GenomeMatcherImpl::minimumSearchLength() const
 {
-    return 0;  // This compiles, but may not be correct
+    return min_searchLength;
 }
 
 bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const
 {
-    return false;  // This compiles, but may not be correct
+    if(minimumLength<min_searchLength)
+        return false;
 }
 
 bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const
 {
+    
     return false;  // This compiles, but may not be correct
 }
 
