@@ -20,10 +20,10 @@ public:
 private:
     struct TrieNode
     {
-        TrieNode():children(4,nullptr){}
-        vector<ValueType> val;
-        vector<TrieNode*> children；
-    }
+        TrieNode():children(128,nullptr){}
+        std::vector<ValueType> val;
+        std::vector<TrieNode*> children;
+    };
     
     TrieNode* root;
     
@@ -74,7 +74,7 @@ private:
 //        }
 //    }
     
-    std::vector<ValueType> searchNode(TrieNode* p, const std::string& key,int i, bool exactMatchOnly)
+    std::vector<ValueType> searchNode(const TrieNode* p, const std::string& key,int i, bool exactMatchOnly) const
     {
         std::vector<ValueType> v;
         int KEY_SIZE=key.size();
@@ -84,7 +84,7 @@ private:
         
         //Exact Match
         //If current node is the last node, concatonate ValueType vector to v
-        if(KEY_SIZE==i+1)
+        if(KEY_SIZE==i)
         {
             v.insert(v.end(),p->val.begin(),p->val.end());
             return v;
@@ -92,11 +92,11 @@ private:
         
         char c=key[i];
         
-        vector<ValueType>* tmp;
+        std::vector<ValueType> tmp;
         if(p->children[c])
         {
-            tmp=&searchNode(p->children[c], key, i+1, exactMatchOnly);
-            v.insert(v.end(),tmp->begin(),tmp->end());
+            tmp=searchNode(p->children[c], key, i+1, exactMatchOnly);
+            v.insert(v.end(),tmp.begin(),tmp.end());
         }
         
         //If we do NOT require exact match
@@ -107,8 +107,8 @@ private:
                 //If children TrieNode is empty
                 if(j==c)
                     continue;
-                tmp=&searchNode(p->children[j],key, i+1, true);
-                v.insert(v.end(),tmp->begin(),tmp->end());
+                tmp=searchNode(p->children[j],key, i+1, true);
+                v.insert(v.end(),tmp.begin(),tmp.end());
             }
         }
         return v;
@@ -116,12 +116,13 @@ private:
     
 };
 
-
-Trie::Trie()
+template <typename ValueType>
+Trie<ValueType>::Trie()
 :root(new TrieNode())
 {}
 
-Trie::~Trie()
+template <typename ValueType>
+Trie<ValueType>::~Trie()
 {
     if(root)
         for(int i=0;i<128;i++)
@@ -131,14 +132,15 @@ Trie::~Trie()
     delete root;
 }
 
-void Trie::reset()
+template <typename ValueType>
+void Trie<ValueType>::reset()
 {
     ~Trie();
     root=new TrieNode();
 }
 
 template <typename ValueType>
-void Trie::insert(const std::string& key, const ValueType& value)
+void Trie<ValueType>::insert(const std::string& key, const ValueType& value)
 {
     //Empty key
     if(key.size()<=0)
@@ -157,9 +159,9 @@ void Trie::insert(const std::string& key, const ValueType& value)
 }
 
 template <typename ValueType>
-std::vector<ValueType> find(const std::string& key, bool exactMatchOnly) const
+std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactMatchOnly) const
 {
-    vector<ValueType> v; //Empty vector of ValueType. Return when Errors detected
+    std::vector<ValueType> v; //Empty vector of ValueType. Return when Errors detected
     
     int KEY_SIZE=key.size();
     if(KEY_SIZE<=0)
@@ -169,10 +171,10 @@ std::vector<ValueType> find(const std::string& key, bool exactMatchOnly) const
     
     //Now key contains at least one element long
     int index=key[0];
-    if(index==-1 || children[index]==nullptr)
+    if(index==-1 || p->children[index]==nullptr)
         return v;
     else
-        p=children[index];
+        p=p->children[index];
     
     //If key is only 1 char long
     //This function works fine if value is empty
