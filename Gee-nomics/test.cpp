@@ -4,15 +4,19 @@
 #include <iostream>
 #include <fstream>
 #include "Trie.h"
+#include "provided.h"
 
 using namespace std;
 
 void test1();
 void test_ifstream();
+void test_GenomeImpl();
+void test_GenomeImpl_Exceptions();
 
 int main()
 {
-    test_ifstream();
+    test_GenomeImpl();
+    test_GenomeImpl_Exceptions();
     
 //    test1();
 //    std::cout<<"Pass all tests!"<<std::endl;
@@ -41,15 +45,51 @@ void test1()
     
 }
 
-void test_GenomeImpl
+void test_GenomeImpl()
 {
-    Genome
+    vector<Genome> v;
+    ifstream inputFile("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test_genome_1.txt");
+    if(!inputFile)
+    {
+        cerr<<"Input file not found!"<<endl;
+        exit(1);
+    }
+    Genome::load(inputFile, v);
+    
+    string fragment;
+    
+    
+    for(int i=0;i<4;i++)
+    {
+        bool isSuccessful=v[i].extract(i, 5, fragment);
+        if(isSuccessful)
+            cout<<"Extract failure!";
+        else cout<<"Genome "<<i<<" is:"<<endl<<fragment<<endl;
+    }
+    
+}
+
+void test_GenomeImpl_Exceptions()
+{
+    vector<Genome> v;
+    ifstream inputFile("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test_genome_empty.txt");
+    assert(!Genome::load(inputFile, v));
+    
+    ifstream inputFile2("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test_genome_empty_genome.txt");
+    assert(!Genome::load(inputFile2, v));
+    
+    ifstream inputFile3("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test_genome_empty_name.txt");
+    assert(!Genome::load(inputFile3, v));
+    
+    ifstream inputFile4("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test_genome_empty_Extraneous.txt");
+    assert(!Genome::load(inputFile4, v));
+    assert(v.empty());
     
 }
 
 void test_ifstream()
 {
-    ifstream input("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test.txt");
+    ifstream input("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test.txt");
     if(!input)
     {
         cerr<<"Cannot open input file!"<<endl;
@@ -101,3 +141,4 @@ void test_ifstream()
     }
     //cout<<output;
 }
+

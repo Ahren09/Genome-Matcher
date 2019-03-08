@@ -33,25 +33,58 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
     
     std::string name;
     std::string gene;
-    std::string tmp;
+    char tmp;
     
-    getline(genomeSource,name);
-    if(name[0]=='>')
-        name=name.substr(1);
-    
-    while(getline(genomeSource,tmp))
+    //Get the first Genome's name
+    //Return false if name is empty
+    if(getline(genomeSource,name))
     {
-        if(tmp[0]=='>')
+        //Now name contains at least 1 char
+        if(name[0]=='>')
+        name=name.substr(1);
+        
+        //Not starting with a properly-formatted name line
+        else
+        {
+            cerr<<"Error: Not starting with '>'"<<endl;
+            return false;
+        }
+    }
+    //Empty file
+    else
+    {
+        cerr<<"Error: Empty file!"<<endl;
+        return false;
+    }
+    
+    while(genomeSource.get(tmp))
+    {
+        if(tmp=='>')
         {
             //Create new Genome using previous contents
             Genome g(name,gene);
             genomes.push_back(g);
-            name=tmp.substr(1);
+            if(getline(genomeSource,name)) //This will skip the '>' before each name of Genome
+            {
+                cerr<<"Error: Empty name"<<endl;
+            }
             gene="";
             
         }
+        else if(tmp=='\n')
+            continue;
+        
         else
+        {
+            toupper(tmp);
+            if(tmp != 'A' && tmp != 'C' && tmp != 'G' && tmp != 'T' && tmp != 'N')
+            {
+                cerr<<"Error: Containing chars other than ACGTN";
+                return false;
+            }
             gene+=tmp;
+        }
+        
     }
     //Create the last genome
     Genome g(name,gene);
@@ -74,9 +107,9 @@ string GenomeImpl::name() const
 bool GenomeImpl::extract(int position, int length, string& fragment) const
 {
     int len=this->length();
-    if(position<0 || len<0 || position+length>=len)
+    if(position<0 || len<0 || position+length>len)
         return false;
-    fragment=seq.substr(position,position+length);
+    fragment=seq.substr(position,length);
     return false;  // This compiles, but may not be correct
 }
 
