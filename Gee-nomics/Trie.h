@@ -102,7 +102,7 @@ private:
         //If we do NOT require exact match
         if(!exactMatchOnly)
         {
-            for(int j=0;j<128;i++)
+            for(int j=0;j<128;j++)
             {
                 //If children TrieNode is empty
                 if(j==c)
