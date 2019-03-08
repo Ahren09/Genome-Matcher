@@ -126,7 +126,7 @@ bool GenomeImpl::extract(int position, int length, string& fragment) const
     if(position<0 || len<0 || position+length>len)
         return false;
     fragment=seq.substr(position,length);
-    return false;  // This compiles, but may not be correct
+    return true;
 }
 
 //******************** Genome functions ************************************

@@ -74,20 +74,18 @@ private:
 //        }
 //    }
     
-    std::vector<ValueType> searchNode(const TrieNode* p, const std::string& key,int i, bool exactMatchOnly) const
+    void searchNode(const TrieNode* p, const std::string& key,int i, bool exactMatchOnly, std::vector<ValueType>& v) const
     {
-        std::vector<ValueType> v;
         int KEY_SIZE=key.size();
         
-        //If p is nullptr
-        if(!p) return v;
+        //Search ends during midway
+        if(!p) return;
         
-        //Exact Match
         //If current node is the last node, concatonate ValueType vector to v
         if(KEY_SIZE==i)
         {
             v.insert(v.end(),p->val.begin(),p->val.end());
-            return v;
+            return;
         }
         
         char c=key[i];
@@ -95,11 +93,10 @@ private:
         std::vector<ValueType> tmp;
         if(p->children[c])
         {
-            tmp=searchNode(p->children[c], key, i+1, exactMatchOnly);
-            v.insert(v.end(),tmp.begin(),tmp.end());
+            searchNode(p->children[c], key, i+1, exactMatchOnly,v);
         }
         
-        //If we do NOT require exact match
+        //Not requiring exact match, search for other nodes
         if(!exactMatchOnly)
         {
             for(int j=0;j<128;j++)
@@ -107,11 +104,9 @@ private:
                 //If children TrieNode is empty
                 if(j==c)
                     continue;
-                tmp=searchNode(p->children[j],key, i+1, true);
-                v.insert(v.end(),tmp.begin(),tmp.end());
+                searchNode(p->children[j],key, i+1, true, v);
             }
         }
-        return v;
     }
     
 };
@@ -184,7 +179,7 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
     }
     
     
-    v=searchNode(p,key,1,exactMatchOnly);
+    searchNode(p,key,1,exactMatchOnly, v);
     return v;
 }
 

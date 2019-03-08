@@ -12,14 +12,16 @@ void test1();
 void test_ifstream();
 void test_GenomeImpl();
 void test_GenomeImpl_Exceptions();
+void test_extract();
 
 int main()
 {
-    test_GenomeImpl();
-    test_GenomeImpl_Exceptions();
+//    test_GenomeImpl();
+//    test_GenomeImpl_Exceptions();
     
-//    test1();
-//    std::cout<<"Pass all tests!"<<std::endl;
+    test1();
+    test_extract();
+    std::cout<<"Pass all tests!"<<std::endl;
 }
 
 
@@ -87,6 +89,22 @@ void test_GenomeImpl_Exceptions()
     
     ifstream inputFile5("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test_genome_secondNameEmpty.txt");
     assert(!Genome::load(inputFile5, v));
+    
+}
+
+void test_extract()
+{
+    Genome g("oryx", "GCTCGGNACACATCCGCCGCGGACGGGACGGGATTCGGGCTGTCGATTGTCTCACAGATCGTCGACGTACATGACTGGGA");
+    string f1, f2, f3;
+    bool result1 = g.extract(0, 5, f1); // result1 = true, f1 = “GCTCG”;
+    bool result2 = g.extract(74, 6, f2); // result2 = true, f2 = “CTGGGA”;
+    bool result3 = g.extract(74, 7, f3); // result3 = false, f3 is unchanged
+    
+    assert(g.length()==80 && g.name()=="oryx");
+    assert(result1 && f1=="GCTCG");
+    assert(result2 && f2=="CTGGGA");
+    assert(!result3 && f3=="");
+    
     
 }
 
