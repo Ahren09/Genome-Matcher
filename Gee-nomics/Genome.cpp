@@ -33,7 +33,7 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
     
     std::string name;
     std::string gene;
-    char tmp;
+    char tmp='X';
     
     //Get the first Genome's name
     //Return false if name is empty
@@ -41,8 +41,14 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
     {
         //Now name contains at least 1 char
         if(name[0]=='>')
-        name=name.substr(1);
-        
+        {
+            name=name.substr(1);
+            if(name=="")
+            {
+                cerr<<"Error: Empty name"<<endl;
+                return false;
+            }
+        }
         //Not starting with a properly-formatted name line
         else
         {
@@ -64,9 +70,10 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
             //Create new Genome using previous contents
             Genome g(name,gene);
             genomes.push_back(g);
-            if(getline(genomeSource,name)) //This will skip the '>' before each name of Genome
+            if(!getline(genomeSource,name)) //This will skip the '>' before each name of Genome
             {
                 cerr<<"Error: Empty name"<<endl;
+                return false;
             }
             gene="";
             
@@ -79,13 +86,22 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
             toupper(tmp);
             if(tmp != 'A' && tmp != 'C' && tmp != 'G' && tmp != 'T' && tmp != 'N')
             {
-                cerr<<"Error: Containing chars other than ACGTN";
+                cerr<<"Error: Containing chars other than ACGTN"<<endl;
                 return false;
             }
             gene+=tmp;
         }
         
     }
+    
+    //If genome sequence is empty
+    if(gene=="")
+    {
+        cerr<<"Error: Empty sequence!"<<endl;
+        return false;
+    }
+    
+    
     //Create the last genome
     Genome g(name,gene);
     genomes.push_back(g);

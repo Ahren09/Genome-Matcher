@@ -1,0 +1,4 @@
+>First Sequence is fine
+ACGTN
+>Empty second sequence
+AX

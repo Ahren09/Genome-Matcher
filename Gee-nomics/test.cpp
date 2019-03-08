@@ -85,6 +85,9 @@ void test_GenomeImpl_Exceptions()
     assert(!Genome::load(inputFile4, v));
     assert(v.empty());
     
+    ifstream inputFile5("/Users/jinyiqiao/Desktop/Git/Gee-nomics/test_files/test_genome_secondNameEmpty.txt");
+    assert(!Genome::load(inputFile5, v));
+    
 }
 
 void test_ifstream()
