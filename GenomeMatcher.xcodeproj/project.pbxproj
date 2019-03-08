@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		9C536C2422303A5D00D2152E /* GenomeMatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C536C2122303A5D00D2152E /* GenomeMatcher.cpp */; };
-		9C536C2522303A5D00D2152E /* Genome.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C536C2322303A5D00D2152E /* Genome.cpp */; };
 		9C9FE8992232178D002FC3A6 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C9FE8982232178D002FC3A6 /* test.cpp */; };
+		9C9FE89D2232E01F002FC3A6 /* Genome.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C9FE89C2232E01F002FC3A6 /* Genome.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,9 +28,9 @@
 		9C536C2022303A5D00D2152E /* provided.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = provided.h; path = "Gee-nomics/provided.h"; sourceTree = "<group>"; };
 		9C536C2122303A5D00D2152E /* GenomeMatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenomeMatcher.cpp; path = "Gee-nomics/GenomeMatcher.cpp"; sourceTree = "<group>"; };
 		9C536C2222303A5D00D2152E /* Trie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Trie.h; path = "Gee-nomics/Trie.h"; sourceTree = "<group>"; };
-		9C536C2322303A5D00D2152E /* Genome.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Genome.cpp; path = "Gee-nomics/Genome.cpp"; sourceTree = "<group>"; };
-		9C9FE89722321518002FC3A6 /* GenomeMatcher */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = GenomeMatcher; path = "/Users/jinyiqiao/Desktop/Git/Gee-nomics/build/Debug/GenomeMatcher"; sourceTree = "<absolute>"; };
 		9C9FE8982232178D002FC3A6 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = test.cpp; path = "Gee-nomics/test.cpp"; sourceTree = "<group>"; };
+		9C9FE89B2232D10B002FC3A6 /* GenomeMatcher */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GenomeMatcher; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C9FE89C2232E01F002FC3A6 /* Genome.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Genome.cpp; path = "Gee-nomics/Genome.cpp"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,11 +47,12 @@
 		9C536C0C22303A3A00D2152E = {
 			isa = PBXGroup;
 			children = (
-				9C536C2322303A5D00D2152E /* Genome.cpp */,
+				9C9FE89C2232E01F002FC3A6 /* Genome.cpp */,
 				9C536C2122303A5D00D2152E /* GenomeMatcher.cpp */,
 				9C536C2022303A5D00D2152E /* provided.h */,
 				9C536C2222303A5D00D2152E /* Trie.h */,
 				9C9FE8982232178D002FC3A6 /* test.cpp */,
+				9C9FE89B2232D10B002FC3A6 /* GenomeMatcher */,
 			);
 			sourceTree = "<group>";
 		};
@@ -72,7 +73,7 @@
 			);
 			name = GenomeMatcher;
 			productName = GenomeMatcher;
-			productReference = 9C9FE89722321518002FC3A6 /* GenomeMatcher */;
+			productReference = 9C9FE89B2232D10B002FC3A6 /* GenomeMatcher */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -111,8 +112,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C536C2522303A5D00D2152E /* Genome.cpp in Sources */,
 				9C536C2422303A5D00D2152E /* GenomeMatcher.cpp in Sources */,
+				9C9FE89D2232E01F002FC3A6 /* Genome.cpp in Sources */,
 				9C9FE8992232178D002FC3A6 /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,4 +1,5 @@
 #include "provided.h"
+#include "Trie.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -14,30 +15,68 @@ public:
     string name() const;
     bool extract(int position, int length, string& fragment) const;
 private:
+    string seq;
+    string m_name;
 };
 
 GenomeImpl::GenomeImpl(const string& nm, const string& sequence)
-{
-    // This compiles, but may not be correct
-}
+:m_name(nm),seq(sequence)
+{}
 
 bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes) 
 {
-    return false;  // This compiles, but may not be correct
+    //Report open failure
+    if(!genomeSource)
+    {
+        return false;
+    }
+    
+    std::string name;
+    std::string gene;
+    std::string tmp;
+    
+    getline(genomeSource,name);
+    if(name[0]=='>')
+        name=name.substr(1);
+    
+    while(getline(genomeSource,tmp))
+    {
+        if(tmp[0]=='>')
+        {
+            //Create new Genome using previous contents
+            Genome g(name,gene);
+            genomes.push_back(g);
+            name=tmp.substr(1);
+            gene="";
+            
+        }
+        else
+            gene+=tmp;
+    }
+    //Create the last genome
+    Genome g(name,gene);
+    genomes.push_back(g);
+    
+    return true;
+    
 }
 
 int GenomeImpl::length() const
 {
-    return 0;  // This compiles, but may not be correct
+    return seq.length();
 }
 
 string GenomeImpl::name() const
 {
-    return "";  // This compiles, but may not be correct
+    return m_name;
 }
 
 bool GenomeImpl::extract(int position, int length, string& fragment) const
 {
+    int len=this->length();
+    if(position<0 || len<0 || position+length>=len)
+        return false;
+    fragment=seq.substr(position,position+length);
     return false;  // This compiles, but may not be correct
 }
 
