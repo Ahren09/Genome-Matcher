@@ -1,6 +1,7 @@
 #include "provided.h"
 #include <string>
 #include <vector>
+#include <map>
 #include <iostream>
 #include <fstream>
 #include "Trie.h"
@@ -156,16 +157,19 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
 
 bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const
 {
+    
     if(fragmentMatchLength<min_searchLength || matchPercentThreshold<=0)
         return false;
     
     int query_length=query.length();
-    
     int SEARCHES=query_length/fragmentMatchLength;
-    double MATCH_PERCENTAGE=100/SEARCHES;
     
     //The index increases by fragmentMatchLength each loop
     int i;
+    
+    //string: stores Genome's name
+    //int: store number of searches with successful match
+    map<string, int> results_map;
     
     for(i=0;i<SEARCHES;i++)
     {
@@ -181,42 +185,40 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
         }
         for(vector<DNAMatch>::iterator matches_it=matches.begin();matches_it!=matches.end();matches_it++)
         {
-            bool genome_exists_in_results = false;
-            
-            //If this genome exists in results, increase percent of match
-            for(vector<GenomeMatch>::iterator results_it=results.begin();results_it!=results.end();results_it++)
-            if(matches_it->genomeName==results_it->genomeName)
+            //If this genome does NOT exist in results, insert genome's name and set appearance to 1;
+            if(results_map.find(matches_it->genomeName)==results_map.end())
             {
-                genome_exists_in_results=true;
-                results_it->percentMatch+=MATCH_PERCENTAGE;
-                break;
+                results_map[matches_it->genomeName]=1;
             }
             
-            //If this genome does NOT exist in results, construct a new GenomeMatch for it
-            if(!genome_exists_in_results)
-            {
-                GenomeMatch g;
-                g.genomeName=matches_it->genomeName;
-                g.percentMatch=MATCH_PERCENTAGE;
-                results.push_back(g);
-            }
+            //If this genome exists in results, increase number of appearance
+            else results_map[matches_it->genomeName]++;
+            
         }
-        
     }
             
     //Sort results in descending order
     //If percentage match is same, arrange in alphabetical order
-    sort(results.begin(),results.end(),[this](GenomeMatch a, GenomeMatch b)
-         {
-             if(a.percentMatch==b.percentMatch)
-                 return a.genomeName<b.genomeName;
-             return a.percentMatch>b.percentMatch;
-         });
+//    sort(results_map.begin(),results_map.end(),[this](GenomeMatch a, GenomeMatch b)
+//         {
+//             if(a.percentMatch==b.percentMatch)
+//                 return a.genomeName<b.genomeName;
+//             return a.percentMatch>b.percentMatch;
+//         });
     
-    int SIZE=results.size();
+    int SIZE=results_map.size();
+    int nMatchThreshold=matchPercentThreshold / 100 * SEARCHES;
+    results.clear();
+    
     //Remove genome with percentage lower than threshold
-    for(i=0; results[i].percentMatch>=matchPercentThreshold;i++);
-    results.resize(i);
+    for(map<string, int>::iterator it=results_map.begin();it!=results_map.end() && it->second>=nMatchThreshold; it++)
+    {
+        GenomeMatch g;
+        g.genomeName=it->first;
+        g.percentMatch=static_cast<double>(it->second*100)/SEARCHES;
+        results.push_back(g);
+        
+    }
     
     return results.size()>0;
 }

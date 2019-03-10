@@ -15,6 +15,7 @@ void test_GenomeImpl_Exceptions();
 void test_extract();
 void test_GenomeMatcher1();
 void test_GenomeMatcher2();
+void test_GenomeMatcher3();
 
 int main()
 {
@@ -302,11 +303,15 @@ void test_GenomeMatcher2()
     Genome g1("Genome_1","CGGTGTACNACGACTGGGGATAGAATATCTTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
     Genome g2("Genome_2","TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
     Genome g3("Genome_3","TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
+    //                    *1   *6   *11  *16  *21  *26  *31  *36  *41  *46  *51  *56  *61  *66  *71  *76
     
     Genome g4("Genome_A","ACGTACNTNCAA");
-    Genome g5("Genome_B","ACGAACGTACAA");
+    Genome g5("Genome_B","ACGAACGTACAAANAA");
     Genome g6("Genome_C","ACGTACGTACGT");
     
+    Genome g7("Genome_C","ACGTACGTACGT");
+    Genome g8("Genome_C","ACGT");
+    Genome g9("Genome_C","ACGTACGTACGT");
     
     GenomeMatcher gm1(4);
     gm1.addGenome(g4);
@@ -314,13 +319,20 @@ void test_GenomeMatcher2()
     gm1.addGenome(g6);
     
     std::vector<GenomeMatch> results;
-    Genome query("Query","ACGTACNTNCAA");
-    gm1.findRelatedGenomes(query, 4, false, 30, results);
+    Genome query("Query","ACGTACNTANAA");
+    gm1.findRelatedGenomes(query, 4, true, 30, results);
     
     int SIZE=results.size();
+    cout.setf(ios::fixed);
+    cout.precision(2);
     for(int i=0;i<SIZE;i++)
     {
         cout<<results[i].genomeName<<" has percentage: "<<results[i].percentMatch<<endl;
-        
     }
+}
+
+void test_GenomeMatcher3()
+{
+    
+    
 }
