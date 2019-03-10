@@ -14,7 +14,7 @@ void test_GenomeImpl();
 void test_GenomeImpl_Exceptions();
 void test_extract();
 void test_GenomeMatcher1();
-
+void test_GenomeMatcher2();
 
 int main()
 {
@@ -23,7 +23,8 @@ int main()
     
 //    test1();
 //    test_extract();
-    test_GenomeMatcher1();
+//    test_GenomeMatcher1();
+    test_GenomeMatcher2();
     std::cout<<"Pass all tests!"<<std::endl;
 }
 
@@ -296,3 +297,30 @@ void test_GenomeMatcher1()
     assert(!result);
 }
 
+void test_GenomeMatcher2()
+{
+    Genome g1("Genome_1","CGGTGTACNACGACTGGGGATAGAATATCTTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
+    Genome g2("Genome_2","TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
+    Genome g3("Genome_3","TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
+    
+    Genome g4("Genome_A","ACGTACNTNCAA");
+    Genome g5("Genome_B","ACGAACGTACAA");
+    Genome g6("Genome_C","ACGTACGTACGT");
+    
+    
+    GenomeMatcher gm1(4);
+    gm1.addGenome(g4);
+    gm1.addGenome(g5);
+    gm1.addGenome(g6);
+    
+    std::vector<GenomeMatch> results;
+    Genome query("Query","ACGTACNTNCAA");
+    gm1.findRelatedGenomes(query, 4, false, 30, results);
+    
+    int SIZE=results.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<results[i].genomeName<<" has percentage: "<<results[i].percentMatch<<endl;
+        
+    }
+}

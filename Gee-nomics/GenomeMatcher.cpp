@@ -20,7 +20,10 @@ private:
     Trie<pair<const Genome*,int>> trie;
     int min_searchLength;
     
-    
+    bool cmp_GenomeMatch(const GenomeMatch& g1, const GenomeMatch& g2)
+    {
+        return g1.percentMatch<g2.percentMatch;
+    }
     
 };
 
@@ -159,7 +162,7 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
     int query_length=query.length();
     
     int SEARCHES=query_length/fragmentMatchLength;
-    double MATCH_PERCENTAGE=1/SEARCHES*100;
+    double MATCH_PERCENTAGE=100/SEARCHES;
     
     //The index increases by fragmentMatchLength each loop
     int i;
@@ -171,9 +174,9 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
         string queryFragment;
         query.extract(i*fragmentMatchLength,fragmentMatchLength,queryFragment);
         
+        //query segment NOT FOUND in all genomes, Continue search of next query_segment
         if(!findGenomesWithThisDNA(queryFragment,min_searchLength,exactMatchOnly,matches))
         {
-            //Continue search of next query_segment
             continue;
         }
         for(vector<DNAMatch>::iterator matches_it=matches.begin();matches_it!=matches.end();matches_it++)
@@ -201,8 +204,21 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
         
     }
             
-            //Sort results in descending order
+    //Sort results in descending order
+    //If percentage match is same, arrange in alphabetical order
+    sort(results.begin(),results.end(),[this](GenomeMatch a, GenomeMatch b)
+         {
+             if(a.percentMatch==b.percentMatch)
+                 return a.genomeName<b.genomeName;
+             return a.percentMatch>b.percentMatch;
+         });
     
+    int SIZE=results.size();
+    //Remove genome with percentage lower than threshold
+    for(i=0; results[i].percentMatch>=matchPercentThreshold;i++);
+    results.resize(i);
+    
+    return results.size()>0;
 }
 
 //******************** GenomeMatcher functions ********************************
