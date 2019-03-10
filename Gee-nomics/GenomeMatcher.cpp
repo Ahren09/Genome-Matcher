@@ -140,7 +140,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
             
         }
     }
-    return matches.empty();
+    return !matches.empty();
 }
 
 bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const

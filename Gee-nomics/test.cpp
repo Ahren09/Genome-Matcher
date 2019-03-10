@@ -174,7 +174,7 @@ void test_GenomeMatcher1()
     Genome g3("Genome_3","TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
     
     
-    GenomeMatcher gm1(3);
+    GenomeMatcher gm1(4);
     gm1.addGenome(g1);
     gm1.addGenome(g2);
     gm1.addGenome(g3);
@@ -182,7 +182,7 @@ void test_GenomeMatcher1()
     std::vector<DNAMatch> matches;
     bool result;
     result = gm1.findGenomesWithThisDNA("GAAG", 4, true, matches);
-    
+    assert(result);
     int SIZE=matches.size();
     for(int i=0;i<SIZE;i++)
     {
@@ -193,18 +193,105 @@ void test_GenomeMatcher1()
     
     std::vector<DNAMatch> matches_2;
     result = gm1.findGenomesWithThisDNA("GAATAC", 4, true, matches_2);
+    SIZE=matches_2.size();
     for(int i=0;i<SIZE;i++)
     {
         cout<<matches_2[i].genomeName<<" of length "<<matches_2[i].length<<" at position "<<matches_2[i].position<<endl;
     }
-    
+    assert(result);
     
     std::vector<DNAMatch> matches_3;
-    result = gm1.findGenomesWithThisDNA("GAATAC", 6, true, matches);
+    result = gm1.findGenomesWithThisDNA("GAATAC", 6, true, matches_3);
     assert(!result);
+    cout<<endl;
     
-    result = gm1.findGenomesWithThisDNA("GAATAC", 6, false, matches);
 
     
+    std::vector<DNAMatch> matches_4;
+    result = gm1.findGenomesWithThisDNA("GAATAC", 6, false, matches_4);
+    SIZE=matches_4.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_4[i].genomeName<<" of length "<<matches_4[i].length<<" at position "<<matches_4[i].position<<endl;
+    }
+    cout<<endl;
+    assert(result);
+    
+    std::vector<DNAMatch> matches_5;
+    result = gm1.findGenomesWithThisDNA("GTATAT", 6, false, matches_5);
+    SIZE=matches_5.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_5[i].genomeName<<" of length "<<matches_5[i].length<<" at position "<<matches_5[i].position<<endl;
+    }
+    cout<<endl;
+    assert(result);
+    
+    cout<<"Test 6: GAATACG, 6, false, matches:"<<endl;
+    std::vector<DNAMatch> matches_6;
+    result = gm1.findGenomesWithThisDNA("GAATACG", 6, false, matches_6);
+    SIZE=matches_6.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_6[i].genomeName<<" of length "<<matches_6[i].length<<" at position "<<matches_6[i].position<<endl;
+    }
+    cout<<endl;
+    assert(result);
+    
+    result=false;
+    cout<<"Test 7: GAAGGGTT, 5, false, matches:"<<endl;
+    std::vector<DNAMatch> matches_7;
+    result = gm1.findGenomesWithThisDNA("GAAGGGTT", 5, false, matches_7);
+    SIZE=matches_7.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_7[i].genomeName<<" of length "<<matches_7[i].length<<" at position "<<matches_7[i].position<<endl;
+    }
+    cout<<endl;
+    assert(result);
+    
+    result=false;
+    cout<<"Test 8: GAAGGGTT, 6, false, matches:"<<endl;
+    std::vector<DNAMatch> matches_8;
+    result = gm1.findGenomesWithThisDNA("GAAGGGTT", 6, false, matches_8);
+    SIZE=matches_8.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_8[i].genomeName<<" of length "<<matches_8[i].length<<" at position "<<matches_8[i].position<<endl;
+    }
+    cout<<endl;
+    assert(result);
+    
+    result=false;
+    cout<<"Test 9: ACGTGCGAGACTTAGAGCC, 12, false, matches:"<<endl;
+    std::vector<DNAMatch> matches_9;
+    result = gm1.findGenomesWithThisDNA("ACGTGCGAGACTTAGAGCC", 12, false, matches_9);
+    SIZE=matches_9.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_9[i].genomeName<<" of length "<<matches_9[i].length<<" at position "<<matches_9[i].position<<endl;
+    }
+    cout<<endl;
+    assert(result);
+    
+    
+    result=false;
+    cout<<"Test 10: ACGTGCGAGACTTAGAGCG, 12, false, matches:"<<endl;
+    std::vector<DNAMatch> matches_10;
+    result = gm1.findGenomesWithThisDNA("ACGTGCGAGACTTAGAGCG", 12, false, matches_10);
+    SIZE=matches_10.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_10[i].genomeName<<" of length "<<matches_10[i].length<<" at position "<<matches_10[i].position<<endl;
+    }
+    cout<<endl;
+    assert(result);
+    
+    std::vector<DNAMatch> matches_11;
+    result = gm1.findGenomesWithThisDNA("GAAG", 3, true, matches_11);
+    assert(!result);
+    result=true;
+    result = gm1.findGenomesWithThisDNA("GAAG", 5, true, matches_11);
+    assert(!result);
 }
 
