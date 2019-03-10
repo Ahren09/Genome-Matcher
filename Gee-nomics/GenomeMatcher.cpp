@@ -10,6 +10,7 @@ class GenomeMatcherImpl
 {
 public:
     GenomeMatcherImpl(int minSearchLength);
+    ~GenomeMatcherImpl();
     void addGenome(const Genome& genome);
     int minimumSearchLength() const;
     bool findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const;
@@ -18,13 +19,22 @@ private:
     std::vector<const Genome*> genomes;
     Trie<pair<const Genome*,int>> trie;
     int min_searchLength;
+    
+    
+    
 };
+
+
 
 
 
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
 :min_searchLength(minSearchLength)
 {}
+
+GenomeMatcherImpl::~GenomeMatcherImpl()
+{
+}
 
 void GenomeMatcherImpl::addGenome(const Genome& genome)
 {
@@ -80,73 +90,119 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
     
     vector<pair<const Genome*, int>> result;
     
-    //i is the starting position of fragment to search
-    for(int i=0;i+minimumLength<=frag_len;i++)
+    //j is the length of currently searching fragment
+    //run F times, F=length of fragment
+    for(int j=minimumLength; j<=frag_len; j++)
     {
-        //j is the length of currently searching fragment
-        for(int j=minimumLength; j+i<=frag_len; j++)
+        result=trie.find(fragment.substr(0,j),exactMatchOnly);
+        
+        //IF NOT found, then no longer sequence with starting point at i can be found
+        if(result.empty())
         {
-            result=trie.find(fragment.substr(i,j),exactMatchOnly);
+            break;
+        }
+        
+        //Traverse through the result
+        for(vector<pair<const Genome*, int>>::iterator p=result.begin();p!=result.end();p++)
+        {
+            const Genome* currentGenome=p->first;
+            string currentGenomeName=currentGenome->name();
+            int currentGenomeStartPosition=p->second;
+            //bool genome_found_at_current_length=false;
+            bool no_this_genome_in_matches=true;
             
-            //IF NOT found, then no longer sequence with starting point at i can be found
-            if(result.empty())
+            vector<DNAMatch>::iterator matches_it=matches.begin();
+            for(;matches_it!=matches.end();matches_it++ )
             {
-                break;
-            }
-            
-            //Traverse through the result
-            for(vector<pair<const Genome*, int>>::iterator p=result.begin();p!=result.end();p++)
-            {
-                const Genome* currentGenome=p->first;
-                string currentGenomeName=currentGenome->name();
-                int currentGenomeStartPosition=p->second;
-                //bool genome_found_at_current_length=false;
-                bool no_this_genome_in_matches=true;
+                //If DNA sequence already inserted into vector<DNAMatch>& matches
+                //Meaning that segments with same starting sequence appear >=twice
                 
-                vector<DNAMatch>::iterator matches_it=matches.begin();
-                for(;matches_it!=matches.end();matches_it++ )
+                //Every genome has at most 1 DNAMatch in matches
+                if(matches_it->genomeName==currentGenomeName)
                 {
-                    //If DNA sequence already inserted into vector<DNAMatch>& matches
-                    //Meaning that segments with same starting sequence appear >=twice
-                    
-                    //Every genome has at most 1 DNAMatch in matches
-                    if(matches_it->genomeName==currentGenomeName)
+                    no_this_genome_in_matches=false;
+                    //If current Genome has length longer than previous DNAMatch
+                    if(j>matches_it->length)
                     {
-                        no_this_genome_in_matches=false;
-                        //If current Genome has length longer than previous DNAMatch
-                        if(j>matches_it->length)
-                        {
-                            matches_it->length=j;
-                            matches_it->position=currentGenomeStartPosition;
-                        }
-                        
+                        matches_it->length=j;
+                        matches_it->position=currentGenomeStartPosition;
                     }
                     
                 }
                 
-                //If DNA sequence NOT inserted into vector<DNAMatch>& matches
-                if(no_this_genome_in_matches)
-                {
-                    DNAMatch d;
-                    d.genomeName=currentGenomeName;
-                    d.position=currentGenomeStartPosition;
-                    d.length=j;
-                    matches.push_back(d);
-                }
-                
             }
             
-            
+            //If DNA sequence NOT inserted into vector<DNAMatch>& matches
+            if(no_this_genome_in_matches)
+            {
+                DNAMatch d;
+                d.genomeName=currentGenomeName;
+                d.position=currentGenomeStartPosition;
+                d.length=j;
+                matches.push_back(d);
+            }
             
         }
+            
+            
+            
+        
     }
     return !matches.empty();
 }
 
 bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const
 {
+    if(fragmentMatchLength<min_searchLength || matchPercentThreshold<=0)
+        return false;
     
-    return false;  // This compiles, but may not be correct
+    int query_length=query.length();
+    
+    int SEARCHES=query_length/fragmentMatchLength;
+    double MATCH_PERCENTAGE=1/SEARCHES*100;
+    
+    //The index increases by fragmentMatchLength each loop
+    int i;
+    
+    for(i=0;i<SEARCHES;i++)
+    {
+        //Initialize target query fragment to be searched
+        vector<DNAMatch> matches;
+        string queryFragment;
+        query.extract(i*fragmentMatchLength,fragmentMatchLength,queryFragment);
+        
+        if(!findGenomesWithThisDNA(queryFragment,min_searchLength,exactMatchOnly,matches))
+        {
+            //Continue search of next query_segment
+            continue;
+        }
+        for(vector<DNAMatch>::iterator matches_it=matches.begin();matches_it!=matches.end();matches_it++)
+        {
+            bool genome_exists_in_results = false;
+            
+            //If this genome exists in results, increase percent of match
+            for(vector<GenomeMatch>::iterator results_it=results.begin();results_it!=results.end();results_it++)
+            if(matches_it->genomeName==results_it->genomeName)
+            {
+                genome_exists_in_results=true;
+                results_it->percentMatch+=MATCH_PERCENTAGE;
+                break;
+            }
+            
+            //If this genome does NOT exist in results, construct a new GenomeMatch for it
+            if(!genome_exists_in_results)
+            {
+                GenomeMatch g;
+                g.genomeName=matches_it->genomeName;
+                g.percentMatch=MATCH_PERCENTAGE;
+                results.push_back(g);
+            }
+        }
+        
+    }
+            
+            //Sort results in descending order
+    
 }
 
 //******************** GenomeMatcher functions ********************************

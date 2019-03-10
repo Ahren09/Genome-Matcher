@@ -217,6 +217,7 @@ void test_GenomeMatcher1()
     cout<<endl;
     assert(result);
     
+    cout<<"Test 5: GTATAT, 6, false, matches:"<<endl;
     std::vector<DNAMatch> matches_5;
     result = gm1.findGenomesWithThisDNA("GTATAT", 6, false, matches_5);
     SIZE=matches_5.size();
