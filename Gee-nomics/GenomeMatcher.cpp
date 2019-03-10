@@ -20,8 +20,10 @@ private:
     int min_searchLength;
 };
 
+
+
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
-:min_searchLength(0)
+:min_searchLength(minSearchLength)
 {}
 
 void GenomeMatcherImpl::addGenome(const Genome& genome)
@@ -51,10 +53,15 @@ void GenomeMatcherImpl::addGenome(const Genome& genome)
             
             //first: vector of Genome* with correspoinding starting node
             //second: index of start position
+            
+            //Number of insertion:
+            //(gen_len-min_len+1)*(gen_len-min_len+2)/2
+            
             pair<const Genome*,int> p;
             p.first=&genome;
             p.second=i;
             trie.insert(fragment.substr(i,j), p);
+            
         }
     }
 }
@@ -77,7 +84,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
     for(int i=0;i+minimumLength<=frag_len;i++)
     {
         //j is the length of currently searching fragment
-        for(int j=min_searchLength; j+i<=frag_len; j++)
+        for(int j=minimumLength; j+i<=frag_len; j++)
         {
             result=trie.find(fragment.substr(i,j),exactMatchOnly);
             
@@ -87,21 +94,25 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
                 break;
             }
             
-            //traverse through the result
+            //Traverse through the result
             for(vector<pair<const Genome*, int>>::iterator p=result.begin();p!=result.end();p++)
             {
                 const Genome* currentGenome=p->first;
                 string currentGenomeName=currentGenome->name();
                 int currentGenomeStartPosition=p->second;
-                
+                //bool genome_found_at_current_length=false;
+                bool no_this_genome_in_matches=true;
                 
                 vector<DNAMatch>::iterator matches_it=matches.begin();
                 for(;matches_it!=matches.end();matches_it++ )
                 {
                     //If DNA sequence already inserted into vector<DNAMatch>& matches
                     //Meaning that segments with same starting sequence appear >=twice
+                    
+                    //Every genome has at most 1 DNAMatch in matches
                     if(matches_it->genomeName==currentGenomeName)
                     {
+                        no_this_genome_in_matches=false;
                         //If current Genome has length longer than previous DNAMatch
                         if(j>matches_it->length)
                         {
@@ -114,16 +125,14 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
                 }
                 
                 //If DNA sequence NOT inserted into vector<DNAMatch>& matches
-                if(matches_it==matches.end())
+                if(no_this_genome_in_matches)
                 {
                     DNAMatch d;
                     d.genomeName=currentGenomeName;
                     d.position=currentGenomeStartPosition;
                     d.length=j;
+                    matches.push_back(d);
                 }
-                
-                
-                
                 
             }
             
@@ -131,8 +140,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
             
         }
     }
-    
-    
+    return matches.empty();
 }
 
 bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const

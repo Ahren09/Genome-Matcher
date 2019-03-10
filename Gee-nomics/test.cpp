@@ -13,14 +13,17 @@ void test_ifstream();
 void test_GenomeImpl();
 void test_GenomeImpl_Exceptions();
 void test_extract();
+void test_GenomeMatcher1();
+
 
 int main()
 {
 //    test_GenomeImpl();
 //    test_GenomeImpl_Exceptions();
     
-    test1();
-    test_extract();
+//    test1();
+//    test_extract();
+    test_GenomeMatcher1();
     std::cout<<"Pass all tests!"<<std::endl;
 }
 
@@ -161,5 +164,47 @@ void test_ifstream()
         
     }
     //cout<<output;
+}
+
+
+void test_GenomeMatcher1()
+{
+    Genome g1("Genome_1","CGGTGTACNACGACTGGGGATAGAATATCTTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
+    Genome g2("Genome_2","TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
+    Genome g3("Genome_3","TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
+    
+    
+    GenomeMatcher gm1(3);
+    gm1.addGenome(g1);
+    gm1.addGenome(g2);
+    gm1.addGenome(g3);
+    
+    std::vector<DNAMatch> matches;
+    bool result;
+    result = gm1.findGenomesWithThisDNA("GAAG", 4, true, matches);
+    
+    int SIZE=matches.size();
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches[i].genomeName<<" of length "<<matches[i].length<<" at position "<<matches[i].position<<endl;
+    }
+    cout<<endl;
+    
+    
+    std::vector<DNAMatch> matches_2;
+    result = gm1.findGenomesWithThisDNA("GAATAC", 4, true, matches_2);
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<matches_2[i].genomeName<<" of length "<<matches_2[i].length<<" at position "<<matches_2[i].position<<endl;
+    }
+    
+    
+    std::vector<DNAMatch> matches_3;
+    result = gm1.findGenomesWithThisDNA("GAATAC", 6, true, matches);
+    assert(!result);
+    
+    result = gm1.findGenomesWithThisDNA("GAATAC", 6, false, matches);
+
+    
 }
 
