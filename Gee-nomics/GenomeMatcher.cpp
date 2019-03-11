@@ -1,7 +1,7 @@
 #include "provided.h"
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <iostream>
 #include <fstream>
 #include "Trie.h"
@@ -169,7 +169,7 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
     
     //string: stores Genome's name
     //int: store number of searches with successful match
-    map<string, int> results_map;
+    unordered_map<string, int> results_map;
     
     for(i=0;i<SEARCHES;i++)
     {
@@ -196,29 +196,30 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
             
         }
     }
-            
-    //Sort results in descending order
-    //If percentage match is same, arrange in alphabetical order
-//    sort(results_map.begin(),results_map.end(),[this](GenomeMatch a, GenomeMatch b)
-//         {
-//             if(a.percentMatch==b.percentMatch)
-//                 return a.genomeName<b.genomeName;
-//             return a.percentMatch>b.percentMatch;
-//         });
+    
     
     int SIZE=results_map.size();
-    int nMatchThreshold=matchPercentThreshold / 100 * SEARCHES;
+    //int nMatchThreshold=matchPercentThreshold / 100 * SEARCHES;
     results.clear();
     
     //Remove genome with percentage lower than threshold
-    for(map<string, int>::iterator it=results_map.begin();it!=results_map.end() && it->second>=nMatchThreshold; it++)
+    for(unordered_map<string, int>::iterator it=results_map.begin();it!=results_map.end(); it++)
     {
         GenomeMatch g;
         g.genomeName=it->first;
         g.percentMatch=static_cast<double>(it->second*100)/SEARCHES;
+        if(g.percentMatch<matchPercentThreshold)
+            continue;
         results.push_back(g);
-        
     }
+    //Sort results in descending order
+    //If percentage match is same, arrange in alphabetical order
+        sort(results.begin(),results.end(),[this](GenomeMatch a, GenomeMatch b)
+             {
+                 if(a.percentMatch==b.percentMatch)
+                     return a.genomeName<b.genomeName;
+                 return a.percentMatch>b.percentMatch;
+             });
     
     return results.size()>0;
 }

@@ -25,7 +25,8 @@ int main()
 //    test1();
 //    test_extract();
 //    test_GenomeMatcher1();
-    test_GenomeMatcher2();
+//    test_GenomeMatcher2();
+    test_GenomeMatcher3();
     std::cout<<"Pass all tests!"<<std::endl;
 }
 
@@ -300,9 +301,9 @@ void test_GenomeMatcher1()
 
 void test_GenomeMatcher2()
 {
-    Genome g1("Genome_1","CGGTGTACNACGACTGGGGATAGAATATCTTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
-    Genome g2("Genome_2","TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
-    Genome g3("Genome_3","TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
+    Genome g1("Genome_a","ACGTATACNACGAGCGGGGATAGAATTTTCTGACGTCGTACCGGTTGTAGTCGTTCGACCGAAGGGTTCCGCGCCAGTAC");
+    Genome g2("Genome_b","TAACAGAGCGGTNATATTGTTACGAATCACGTGCGAGACTTAGAGCCAGAATATGAAGTAGTGATTCAGCAACCAAGCGG");
+    Genome g3("Genome_c","TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
     //                    *1   *6   *11  *16  *21  *26  *31  *36  *41  *46  *51  *56  *61  *66  *71  *76
     
     Genome g4("Genome_A","ACGTACNTNCAA");
@@ -314,13 +315,16 @@ void test_GenomeMatcher2()
     Genome g9("Genome_C","ACGTACGTACGT");
     
     GenomeMatcher gm1(4);
+    gm1.addGenome(g1);
+    gm1.addGenome(g2);
+    gm1.addGenome(g3);
     gm1.addGenome(g4);
     gm1.addGenome(g5);
     gm1.addGenome(g6);
     
     std::vector<GenomeMatch> results;
-    Genome query("Query","ACGTACNTANAA");
-    gm1.findRelatedGenomes(query, 4, true, 30, results);
+    Genome query("Query","ACGTACNTANTTTTC");
+    gm1.findRelatedGenomes(query, 5, true, 30, results);
     
     int SIZE=results.size();
     cout.setf(ios::fixed);
@@ -333,6 +337,31 @@ void test_GenomeMatcher2()
 
 void test_GenomeMatcher3()
 {
+    Genome g5("Genome_sameas_a_2","AAAAGTCCCCTTTTATCCCA");
+    Genome g1("Genome_a","AAAAGTCCCCTTTTATCCCA");
+    Genome g2("Genome_b","TCCCNGAAATTTTTGCCCCCNNNNN");
+    Genome g3("Genome_c","TTTTGAGCCAGCGACGCGGCTTGCTTAACGAAGCGGAAGAGTAGGTTGGACACATTNGGCGGCACAGCGCTTTTGAGCCA");
+    Genome g4("Genome_sameas_a","AAAAGTCCCCTTTTATCCCA");
     
+    //                    *1   *6   *11  *16  *21  *26  *31  *36  *41  *46  *51  *56  *61  *66  *71  *76
+    GenomeMatcher gm1(4);
+    gm1.addGenome(g1);
+    gm1.addGenome(g2);
+    gm1.addGenome(g3);
+    gm1.addGenome(g4);
+    gm1.addGenome(g5);
+//    gm1.addGenome(g6);
     
+    std::vector<GenomeMatch> results;
+    Genome query("Query","AAAAGCNNNATTTTGACGNTCCCNCATATATCCCAGAAATCCCCC");
+    //                    *1   *6   *11  *16  *21  *26  *31  *36  *41
+    
+    gm1.findRelatedGenomes(query, 5, true, 11.11, results);
+    int SIZE=results.size();
+    cout.setf(ios::fixed);
+    cout.precision(2);
+    for(int i=0;i<SIZE;i++)
+    {
+        cout<<results[i].genomeName<<" has percentage: "<<results[i].percentMatch<<endl;
+    }
 }
