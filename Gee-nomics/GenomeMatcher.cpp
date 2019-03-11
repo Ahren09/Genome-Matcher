@@ -58,25 +58,13 @@ void GenomeMatcherImpl::addGenome(const Genome& genome)
     //i: starting position of DNA sequence at corresponding genome
     for(int i=0;i+min_searchLength<=len;i++)
     {
-        
-        //j:length of segment to be inserted with start position at i
-        for(int j=min_searchLength;j+i<=len;j++)
-        {
-            //TODO: what if previously already inserted?
-            //Construct the pair to be inserted into the trie
-            
-            //first: vector of Genome* with correspoinding starting node
-            //second: index of start position
-            
-            //Number of insertion:
-            //(gen_len-min_len+1)*(gen_len-min_len+2)/2
-            
-            pair<const Genome*,int> p;
-            p.first=&genome;
-            p.second=i;
-            trie.insert(fragment.substr(i,j), p);
-            
-        }
+        //Construct the pair to be inserted into the trie
+        //first: vector of Genome* with correspoinding starting node
+        //second: index of start position
+        pair<const Genome*,int> p;
+        p.first=&genome;
+        p.second=i;
+        trie.insert(fragment.substr(i,min_searchLength), p);
     }
 }
 

@@ -27,52 +27,15 @@ private:
     
     TrieNode* root;
     
-//    int toIndex(const char c) const
-//    {
-//        switch(c)
-//        {
-//            case 'A':
-//                return 0;
-//                break;
-//            case 'C':
-//                return 1;
-//                break;
-//            case 'G':
-//                return 2;
-//                break;
-//            case 'T':
-//                return 3;
-//                break;
-//            default:
-//                return -1;
-//                break;
-//        }
-//
-//    }
-//
-//    char toBase(const int i) const
-//    {
-//        {
-//            switch(i)
-//            {
-//                case 0:
-//                    return 'A';
-//                    break;
-//                case 1:
-//                    return 'C';
-//                    break;
-//                case 2:
-//                    return 'G';
-//                    break;
-//                case 3:
-//                    return 'T';
-//                    break;
-//                default:
-//                    return 'X';
-//                    break;
-//            }
-//        }
-//    }
+    void deleteAllNodes(TrieNode* root)
+    {
+        if(root)
+            for(int i=0;i<128;i++)
+            {
+                deleteAllNodes(root->children[i]);
+            }
+        delete root;
+    }
     
     void searchNode(const TrieNode* p, const std::string& key,int i, bool exactMatchOnly, std::vector<ValueType>& v) const
     {
@@ -119,21 +82,19 @@ Trie<ValueType>::Trie()
 template <typename ValueType>
 Trie<ValueType>::~Trie()
 {
-    if(root)
-        for(int i=0;i<128;i++)
-        {
-            delete root->children[i];
-        }
-    delete root;
+    deleteAllNodes(root);
 }
 
 template <typename ValueType>
 void Trie<ValueType>::reset()
 {
-    ~Trie();
+    deleteAllNodes();
     root=new TrieNode();
 }
 
+//insert()
+//Complexity: O(L)
+//L : length of the inserted key
 template <typename ValueType>
 void Trie<ValueType>::insert(const std::string& key, const ValueType& value)
 {
@@ -144,7 +105,6 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value)
     TrieNode* p=root;
     for(char c:key)
     {
-        
         if(!p->children[c])
             p->children[c]=new TrieNode();
         p=p->children[c];
