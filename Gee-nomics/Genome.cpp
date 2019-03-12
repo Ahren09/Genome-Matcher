@@ -123,8 +123,15 @@ string GenomeImpl::name() const
 bool GenomeImpl::extract(int position, int length, string& fragment) const
 {
     int len=this->length();
-    if(position<0 || len<0 || position+length>len)
+    if(position<0 || len<0)
         return false;
+    
+    //If extract reaches end of fragment, return fragment after position
+    if(position+length>len)
+    {
+        fragment=position;
+        return false;
+    }
     fragment=seq.substr(position,length);
     return true;
 }

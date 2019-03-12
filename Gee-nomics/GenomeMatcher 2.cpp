@@ -80,90 +80,71 @@ int GenomeMatcherImpl::minimumSearchLength() const
 bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const
 {
     int frag_len=fragment.size();
+    
     if(minimumLength<min_searchLength || frag_len<minimumLength)
         return false;
     
-    unordered_map<const Genome*,pair<int,int>> tmp;
     vector<pair<const Genome*, int>> result;
-
-    //initial match has the same beginning as
-    string searchFragment=fragment.substr(0,minimumSearchLength());
     
-    vector<pair<const Genome*,int> > InitialMatch= trie.find(searchFragment, exactMatchOnly);
-    int MAX_MISMATCH=exactMatchOnly ? 0:1;
-    
-    //Processing initial search result
-    //extract the genes to search from using a new trie
-    
-    //Each loop run F times, F=length of fragment
-    for(vector<pair<const Genome*,int> >::iterator it=InitialMatch.begin(); it!=InitialMatch.end(); it++)
+    //j is the length of currently searching fragment
+    //run F times, F=length of fragment
+    for(int j=minimumLength; j<=frag_len; j++)
     {
-        string potentialMatch;
-        const Genome* g=it->first;
-        int startPosition=it->second;
-        int misMatch=0; //Number of mismatches
-        int sizeOfPotentialMatch;
+        result=trie.find(fragment.substr(0,j),exactMatchOnly);
         
-        //True: extract fragment has length equal to min search length
-        //False: fragment has shorter size
-        g->extract(startPosition, frag_len, potentialMatch);
-        
-        sizeOfPotentialMatch=potentialMatch.size();
-        if(potentialMatch.size()<minimumLength)
-            continue;
-        
-        bool matchMoreThanMinLength=false;
-        
-        
-        //i is the index of last mismatch, OR length
-        int i;
-        for(i=0;i<sizeOfPotentialMatch ;i++)
+        //IF NOT found, then no longer sequence with starting point at i can be found
+        if(result.empty())
         {
-            if(potentialMatch[i]!=fragment[i])
-            {
-                misMatch++;
-            }
-            if(misMatch>MAX_MISMATCH)
-                break;
+            break;
         }
         
-        if(i>=minimumLength)
+        //Traverse through the result
+        //Run H times, H=Number of distinct hits
+        for(vector<pair<const Genome*, int>>::iterator p=result.begin();p!=result.end();p++)
         {
-            if(tmp.find(g)==tmp.end())
+            const Genome* currentGenome=p->first;
+            string currentGenomeName=currentGenome->name();
+            int currentGenomeStartPosition=p->second;
+            //bool genome_found_at_current_length=false;
+            bool no_this_genome_in_matches=true;
+            
+            vector<DNAMatch>::iterator matches_it=matches.begin();
+            for(;matches_it!=matches.end();matches_it++ )
             {
-                pair<int, int> positionAndLength;
-                positionAndLength.first=startPosition;
-                positionAndLength.second=i;
-                tmp[g]=positionAndLength;
-            }
-            else
-            {
-                if(i>tmp[g].second)
+                //If DNA sequence already inserted into vector<DNAMatch>& matches
+                //Meaning that segments with same starting sequence appear >=twice
+                
+                //Every genome has at most 1 DNAMatch in matches
+                if(matches_it->genomeName==currentGenomeName)
                 {
-                    tmp[g].first=startPosition;
-                    tmp[g].second=i;
+                    no_this_genome_in_matches=false;
+                    //If current Genome has length longer than previous DNAMatch
+                    if(j>matches_it->length)
+                    {
+                        matches_it->length=j;
+                        matches_it->position=currentGenomeStartPosition;
+                    }
+                    
                 }
+                
             }
+            
+            //If DNA sequence NOT inserted into vector<DNAMatch>& matches
+            if(no_this_genome_in_matches)
+            {
+                DNAMatch d;
+                d.genomeName=currentGenomeName;
+                d.position=currentGenomeStartPosition;
+                d.length=j;
+                matches.push_back(d);
+            }
+            
         }
+            
+            
+            
+        
     }
-    
-    for(unordered_map<const Genome*,pair<int,int>>::iterator it=tmp.begin();it!=tmp.end();it++)
-    {
-        DNAMatch d;
-        d.genomeName=it->first->name();
-        d.position=it->second.first;
-        d.length=it->second.second;
-        matches.push_back(d);
-    }
-    
-    sort(matches.begin(),matches.end(),[this](DNAMatch a, DNAMatch b)
-         {
-             if(a.length==b.length)
-                 return a.genomeName<b.genomeName;
-             return a.length>b.length;
-             
-         });
-    
     return !matches.empty();
 }
 
