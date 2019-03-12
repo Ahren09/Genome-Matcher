@@ -17,18 +17,18 @@ void test_GenomeMatcher1();
 void test_GenomeMatcher2();
 void test_GenomeMatcher3();
 
-int main()
-{
-//    test_GenomeImpl();
-//    test_GenomeImpl_Exceptions();
-
-//    test1();
-//    test_extract();
-    test_GenomeMatcher1();
-//    test_GenomeMatcher2();
-//    test_GenomeMatcher3();
-    std::cout<<"Pass all tests!"<<std::endl;
-}
+//int main()
+//{
+////    test_GenomeImpl();
+////    test_GenomeImpl_Exceptions();
+//
+////    test1();
+////    test_extract();
+////    test_GenomeMatcher1();
+////    test_GenomeMatcher2();
+////    test_GenomeMatcher3();
+//    std::cout<<"Pass all tests!"<<std::endl;
+//}
 
 
 void test1()

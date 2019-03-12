@@ -52,7 +52,7 @@ void GenomeMatcherImpl::addGenome(const Genome& genome)
     int len=genome.length();
     
     //If Genome is shorter than mininum length
-    if(len<min_searchLength)
+    if(len<min_searchLength || len==0)
         return;
     
     //Extract genome to be inserted from certain point
@@ -86,25 +86,26 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
     unordered_map<const Genome*,pair<int,int>> tmp;
     vector<pair<const Genome*, int>> result;
 
-    //initial match has the same beginning as
     string searchFragment=fragment.substr(0,minimumSearchLength());
     
+    //Initial match has the same beginning as final matches
     vector<pair<const Genome*,int> > InitialMatch= trie.find(searchFragment, exactMatchOnly);
     int MAX_MISMATCH=exactMatchOnly ? 0:1;
     
     //Processing initial search result
-    //extract the genes to search from using a new trie
-    
     //Each loop run F times, F=length of fragment
     for(vector<pair<const Genome*,int> >::iterator it=InitialMatch.begin(); it!=InitialMatch.end(); it++)
     {
+        
         string potentialMatch;
         const Genome* g=it->first;
+        if(!g)
+            continue;
         int startPosition=it->second;
         int misMatch=0; //Number of mismatches
         int sizeOfPotentialMatch;
         
-        //True: extract fragment has length equal to min search length
+        //True: extract fragment has length equal to fragment length
         //False: fragment has shorter size
         g->extract(startPosition, frag_len, potentialMatch);
         
@@ -112,10 +113,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
         if(potentialMatch.size()<minimumLength)
             continue;
         
-        bool matchMoreThanMinLength=false;
-        
-        
-        //i is the index of last mismatch, OR length
+        //i is length, OR index of last mismatch
         int i;
         for(i=0;i<sizeOfPotentialMatch ;i++)
         {

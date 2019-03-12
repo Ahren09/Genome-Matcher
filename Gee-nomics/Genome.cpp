@@ -127,9 +127,9 @@ bool GenomeImpl::extract(int position, int length, string& fragment) const
         return false;
     
     //If extract reaches end of fragment, return fragment after position
-    if(position+length>len)
+    if(position+length>=len)
     {
-        fragment=position;
+        fragment=seq.substr(position);
         return false;
     }
     fragment=seq.substr(position,length);
