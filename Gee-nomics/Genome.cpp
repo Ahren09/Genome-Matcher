@@ -20,7 +20,7 @@ private:
 };
 
 GenomeImpl::GenomeImpl(const string& nm, const string& sequence)
-:m_name(nm),seq(sequence)
+:seq(sequence),m_name(nm)
 {}
 
 bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes) 
@@ -45,21 +45,21 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
             name=name.substr(1);
             if(name=="")
             {
-                cerr<<"Error: Empty name"<<endl;
+                //cerr<<"Error: Empty name"<<endl;
                 return false;
             }
         }
         //Not starting with a properly-formatted name line
         else
         {
-            cerr<<"Error: Not starting with '>'"<<endl;
+            //cerr<<"Error: Not starting with '>'"<<endl;
             return false;
         }
     }
     //Empty file
     else
     {
-        cerr<<"Error: Empty file!"<<endl;
+        //cerr<<"Error: Empty file!"<<endl;
         return false;
     }
     
@@ -72,7 +72,7 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
             genomes.push_back(g);
             if(!getline(genomeSource,name)) //This will skip the '>' before each name of Genome
             {
-                cerr<<"Error: Empty name"<<endl;
+                //cerr<<"Error: Empty name"<<endl;
                 return false;
             }
             gene="";
@@ -83,10 +83,10 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
         
         else
         {
-            toupper(tmp);
+            tmp=toupper(tmp);
             if(tmp != 'A' && tmp != 'C' && tmp != 'G' && tmp != 'T' && tmp != 'N')
             {
-                cerr<<"Error: Containing chars other than ACGTN"<<endl;
+                //cerr<<"Error: Containing chars other than ACGTN"<<endl;
                 return false;
             }
             gene+=tmp;
@@ -97,7 +97,7 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
     //If genome sequence is empty
     if(gene=="")
     {
-        cerr<<"Error: Empty sequence!"<<endl;
+        //cerr<<"Error: Empty sequence!"<<endl;
         return false;
     }
     

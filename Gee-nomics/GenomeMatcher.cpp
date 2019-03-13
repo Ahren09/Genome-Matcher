@@ -5,22 +5,23 @@
 #include <iostream>
 #include <fstream>
 #include "Trie.h"
+#include <algorithm>
+
 using namespace std;
 
 class GenomeMatcherImpl
 {
 public:
     GenomeMatcherImpl(int minSearchLength);
-    ~GenomeMatcherImpl();
     void addGenome(const Genome& genome);
     int minimumSearchLength() const;
     bool findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const;
     bool findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const;
 private:
     int nGenomes;
-    std::vector<const Genome> genomes;
-    Trie<pair<int,int>> trie;
     int min_searchLength;
+    std::vector<Genome> genomes;
+    Trie<pair<int,int>> trie;
     
     bool cmp_GenomeMatch(const GenomeMatch& g1, const GenomeMatch& g2)
     {
@@ -30,22 +31,14 @@ private:
 
 
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
-:min_searchLength(minSearchLength), nGenomes(0)
+:nGenomes(0),min_searchLength(minSearchLength)
 {}
-
-GenomeMatcherImpl::~GenomeMatcherImpl()
-{
-}
-
-
 
 //Time: O(L* N)
 //L : GenomeMatcher's minSearchLength
 //N : length of the added Genome's DNA sequence
 void GenomeMatcherImpl::addGenome(const Genome& genome)
 {
-    
-    //Num of computation is (GENOME_LENGTH-SEARCH_LENGTH)*SEARCH_LENGTH
     genomes.push_back(genome);
     int len=genome.length();
     
@@ -85,11 +78,12 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
     unordered_map<const Genome*,pair<int,int>> tmp;
     vector<pair<const Genome*, int>> result;
 
-    string searchFragment=fragment.substr(0,minimumSearchLength());
+    string searchFragment=fragment.substr(0,min_searchLength);
     
     //Initial match has the same beginning as final matches
     vector<pair<int,int> > InitialMatch= trie.find(searchFragment, exactMatchOnly);
     int MAX_MISMATCH=exactMatchOnly ? 0:1;
+    
     //Processing initial search result
     //Each loop run F times, F=length of fragment
     for(vector<pair<int,int> >::iterator it=InitialMatch.begin(); it!=InitialMatch.end(); it++)
@@ -126,9 +120,7 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
             if(misMatch>MAX_MISMATCH) break;
         }
         
-        //GGGGTTTTAAAACCCCACGTACGTACGTNANANANA
-        //AAATCCCTGGGGTTTTNANA
-        //Search terminates. If number of mismatches goes above threshold, start next search
+        //Search terminates if number of mismatches goes above threshold
         if(misMatch>MAX_MISMATCH && i<minimumLength)
             continue;
         
@@ -196,7 +188,7 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
         query.extract(i*fragmentMatchLength,fragmentMatchLength,queryFragment);
         
         //query segment NOT FOUND in all genomes, Continue search of next query_segment
-        if(!findGenomesWithThisDNA(queryFragment,min_searchLength,exactMatchOnly,matches))
+        if(!findGenomesWithThisDNA(queryFragment,fragmentMatchLength,exactMatchOnly,matches))
         {   continue;   }
         for(vector<DNAMatch>::iterator matches_it=matches.begin();matches_it!=matches.end();matches_it++)
         {
@@ -212,8 +204,6 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
         }
     }
     
-    
-    int SIZE=results_map.size();
     //int nMatchThreshold=matchPercentThreshold / 100 * SEARCHES;
     results.clear();
     

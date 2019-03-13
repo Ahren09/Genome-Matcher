@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Gee-nomics/main.cpp"
-            timestampString = "574204362.775681"
+            timestampString = "574204999.2170089"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "292"
@@ -26,7 +26,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Gee-nomics/GenomeMatcher.cpp"
-            timestampString = "574204362.776089"
+            timestampString = "574204999.217489"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "131"
@@ -42,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Gee-nomics/GenomeMatcher.cpp"
-            timestampString = "574204362.7767479"
+            timestampString = "574204999.218165"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "132"
@@ -58,28 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Gee-nomics/GenomeMatcher.cpp"
-            timestampString = "574204362.777114"
+            timestampString = "574204999.218573"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "122"
             endingLineNumber = "122"
             landmarkName = "GenomeMatcherImpl::findGenomesWithThisDNA(const string&amp; fragment, int minimumLength, bool exactMatchOnly, vector&lt;DNAMatch&gt;&amp; matches)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Gee-nomics/GenomeMatcher.cpp"
-            timestampString = "574204362.777465"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "196"
-            endingLineNumber = "196"
-            landmarkName = "GenomeMatcherImpl::findRelatedGenomes(const Genome&amp; query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector&lt;GenomeMatch&gt;&amp; results)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
