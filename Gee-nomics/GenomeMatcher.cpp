@@ -26,11 +26,7 @@ private:
     {
         return g1.percentMatch<g2.percentMatch;
     }
-    
 };
-
-
-
 
 
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
@@ -121,17 +117,22 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
         
         //i is length, OR index of last mismatch
         int i;
-        for(i=0;i<sizeOfPotentialMatch ;i++)
+        for(i=0;i<sizeOfPotentialMatch;i++)
         {
             if(potentialMatch[i]!=fragment[i])
             {
                 misMatch++;
             }
-            if(misMatch>MAX_MISMATCH)
-                break;
+            if(misMatch>MAX_MISMATCH) break;
         }
         
-        if(i>=minimumLength)
+        //GGGGTTTTAAAACCCCACGTACGTACGTNANANANA
+        //AAATCCCTGGGGTTTTNANA
+        //Search terminates. If number of mismatches goes above threshold, start next search
+        if(misMatch>MAX_MISMATCH && i<minimumLength)
+            continue;
+        
+        else if(i>=minimumLength)
         {
             if(tmp.find(g)==tmp.end())
             {
@@ -196,9 +197,7 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
         
         //query segment NOT FOUND in all genomes, Continue search of next query_segment
         if(!findGenomesWithThisDNA(queryFragment,min_searchLength,exactMatchOnly,matches))
-        {
-            continue;
-        }
+        {   continue;   }
         for(vector<DNAMatch>::iterator matches_it=matches.begin();matches_it!=matches.end();matches_it++)
         {
             //If this genome does NOT exist in results, insert genome's name and set appearance to 1;
@@ -223,11 +222,12 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
     {
         GenomeMatch g;
         g.genomeName=it->first;
-        g.percentMatch=static_cast<double>(it->second*100)/SEARCHES;
+        g.percentMatch=static_cast<double>(it->second)*100/SEARCHES;
         if(g.percentMatch<matchPercentThreshold)
             continue;
         results.push_back(g);
     }
+    
     //Sort results in descending order
     //If percentage match is same, arrange in alphabetical order
         sort(results.begin(),results.end(),[this](GenomeMatch a, GenomeMatch b)
