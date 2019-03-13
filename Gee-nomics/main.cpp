@@ -14,7 +14,6 @@ using namespace std;
 
 const string PROVIDED_DIR = "/Users/jinyiqiao/Desktop/Git/Gee-nomics/data";
 
-
 const string providedFiles[] = {
     "Ferroplasma_acidarmanus.txt",
     "Halobacterium_jilantaiense.txt",

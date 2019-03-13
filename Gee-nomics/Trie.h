@@ -135,7 +135,9 @@ std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactM
     //This function works fine if value is empty
     if(KEY_SIZE==1)
     {
-        v.insert(v.end(),p->val.begin(),p->val.end());
+        if(!p->val.empty())
+            v.insert(v.end(),p->val.begin(),p->val.end());
+        return v;
     }
     
     
